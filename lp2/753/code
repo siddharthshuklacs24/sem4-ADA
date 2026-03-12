@@ -1,0 +1,54 @@
+#include <stdlib.h>
+#include <string.h>
+
+int visited[100000];
+char *result;
+int idx;
+int k_global, n_global;
+int base;
+
+int power(int a, int b) {
+    int res = 1;
+    for(int i = 0; i < b; i++)
+        res *= a;
+    return res;
+}
+
+void dfs(int node) {
+    for(int i = 0; i < k_global; i++) {
+
+        int edge = node * k_global + i;
+
+        if(!visited[edge]) {
+            visited[edge] = 1;
+
+            dfs(edge % base);
+
+            result[idx++] = '0' + i;
+        }
+    }
+}
+
+char* crackSafe(int n, int k) {
+
+    n_global = n;
+    k_global = k;
+
+    base = power(k, n-1);
+
+    int totalEdges = power(k,n);
+
+    result = (char*)malloc(totalEdges + n + 1);
+    memset(visited,0,sizeof(visited));
+
+    idx = 0;
+
+    dfs(0);
+
+    for(int i = 0; i < n-1; i++)
+        result[idx++] = '0';
+
+    result[idx] = '\0';
+
+    return result;
+}
