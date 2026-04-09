@@ -1,0 +1,72 @@
+import time
+import random
+import sys
+import matplotlib.pyplot as plt
+
+# Increase recursion depth for Quick Sort on large arrays
+sys.setrecursionlimit(20000)
+
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+def measure_time(sort_func, data):
+    start = time.time()
+    sort_func(data.copy())
+    return time.time() - start
+
+# Parameters
+sizes = [500, 1000, 2000, 3000, 5000, 7500, 10000]
+merge_times = []
+quick_times = []
+
+print("Starting performance tests...")
+
+for n in sizes:
+    test_data = [random.randint(0, 100000) for _ in range(n)]
+    
+    m_time = measure_time(merge_sort, test_data)
+    q_time = measure_time(quick_sort, test_data)
+    
+    merge_times.append(m_time)
+    quick_times.append(q_time)
+    print(f"Size {n} completed: Merge={m_time:.4f}s, Quick={q_time:.4f}s")
+
+# Plotting the results
+plt.figure(figsize=(10, 6))
+plt.plot(sizes, merge_times, label='Merge Sort', marker='o', color='blue')
+plt.plot(sizes, quick_times, label='Quick Sort', marker='s', color='red')
+
+plt.title('Merge Sort vs. Quick Sort Efficiency')
+plt.xlabel('Number of Elements (n)')
+plt.ylabel('Time (seconds)')
+plt.legend()
+plt.grid(True)
+plt.show()
