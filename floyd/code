@@ -8,10 +8,12 @@ void printSolution(int dist[][V]);
 void floydWarshall(int graph[][V]) {
     int dist[V][V], i, j, k;
 
+    // Initialize the solution matrix same as input graph matrix
     for (i = 0; i < V; i++)
         for (j = 0; j < V; j++)
             dist[i][j] = graph[i][j];
 
+    // Core Floyd-Warshall Logic
     for (k = 0; k < V; k++) {
         for (i = 0; i < V; i++) {
             for (j = 0; j < V; j++) {
@@ -24,7 +26,7 @@ void floydWarshall(int graph[][V]) {
 }
 
 void printSolution(int dist[][V]) {
-    printf("The following matrix shows the shortest distances between every pair of vertices:\n");
+    printf("\nThe following matrix shows the shortest distances between every pair of vertices:\n");
     for (int i = 0; i < V; i++) {
         for (int j = 0; j < V; j++) {
             if (dist[i][j] == INF)
@@ -37,11 +39,20 @@ void printSolution(int dist[][V]) {
 }
 
 int main() {
-    int graph[V][V] = { { 0, 3, INF, 7 },
-                        { 8, 0, 2, INF },
-                        { 5, INF, 0, 1 },
-                        { 2, INF, INF, 0 } };
+    int graph[V][V];
+
+    printf("--- Floyd-Warshall All-Pairs Shortest Path ---\n");
+    printf("Note: Enter %d for vertices with no direct connection (INF).\n\n", INF);
+
+    // Taking input from the user
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            printf("Enter weight for edge [%d][%d]: ", i, j);
+            scanf("%d", &graph[i][j]);
+        }
+    }
 
     floydWarshall(graph);
+
     return 0;
 }
