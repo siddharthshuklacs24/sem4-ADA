@@ -1,0 +1,80 @@
+#include <stdlib.h>
+#include <limits.h>
+
+#define MOD 1000000007
+#define MAXN 205
+
+typedef struct {
+    int node;
+    long long dist;
+} Pair;
+
+// simple min distance finder (no heap)
+int getMinNode(int n, long long dist[], int visited[]) {
+    long long min = LLONG_MAX;
+    int idx = -1;
+
+    for (int i = 0; i < n; i++) {
+        if (!visited[i] && dist[i] < min) {
+            min = dist[i];
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+int countPaths(int n, int** roads, int roadsSize, int* roadsColSize) {
+
+    long long dist[MAXN];
+    long long ways[MAXN];
+    int visited[MAXN];
+
+    // adjacency matrix (since constraints small enough)
+    long long graph[MAXN][MAXN];
+
+    // initialize
+    for (int i = 0; i < n; i++) {
+        dist[i] = LLONG_MAX;
+        ways[i] = 0;
+        visited[i] = 0;
+        for (int j = 0; j < n; j++)
+            graph[i][j] = LLONG_MAX;
+    }
+
+    // build graph
+    for (int i = 0; i < roadsSize; i++) {
+        int u = roads[i][0];
+        int v = roads[i][1];
+        int t = roads[i][2];
+
+        graph[u][v] = t;
+        graph[v][u] = t;
+    }
+
+    dist[0] = 0;
+    ways[0] = 1;
+
+    // Dijkstra
+    for (int i = 0; i < n; i++) {
+        int u = getMinNode(n, dist, visited);
+        if (u == -1) break;
+
+        visited[u] = 1;
+
+        for (int v = 0; v < n; v++) {
+            if (graph[u][v] == LLONG_MAX) continue;
+
+            long long newDist = dist[u] + graph[u][v];
+
+            if (newDist < dist[v]) {
+                dist[v] = newDist;
+                ways[v] = ways[u];
+            }
+            else if (newDist == dist[v]) {
+                ways[v] = (ways[v] + ways[u]) % MOD;
+            }
+        }
+    }
+
+    return ways[n - 1] % MOD;
+}
