@@ -1,0 +1,44 @@
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SUM 5000
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int tallestBillboard(int* rods, int rodsSize) {
+    int dp[MAX_SUM + 1];
+    int temp[MAX_SUM + 1];
+
+    // initialize dp with -1 (invalid)
+    for (int i = 0; i <= MAX_SUM; i++)
+        dp[i] = -1;
+
+    dp[0] = 0;
+
+    for (int i = 0; i < rodsSize; i++) {
+        int rod = rods[i];
+
+        // copy current state
+        memcpy(temp, dp, sizeof(dp));
+
+        for (int diff = 0; diff <= MAX_SUM; diff++) {
+            if (temp[diff] < 0) continue;
+
+            int height = temp[diff];
+
+            // 1. add to taller side
+            if (diff + rod <= MAX_SUM)
+                dp[diff + rod] = max(dp[diff + rod], height);
+
+            // 2. add to shorter side
+            int newDiff = abs(diff - rod);
+            int newHeight = height + (diff < rod ? diff : rod);
+
+            dp[newDiff] = max(dp[newDiff], newHeight);
+        }
+    }
+
+    return dp[0];
+}
